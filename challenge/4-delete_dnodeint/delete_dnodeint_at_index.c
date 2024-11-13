@@ -11,40 +11,44 @@
  */
 int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
 {
-    dlistint_t *current = *head;
-    unsigned int p = 0;
+	dlistint_t *saved_head;
+	dlistint_t *tmp;
+	unsigned int p;
 
-    if (*head == NULL) // Verifica si la lista está vacía
-        return (-1);
-
-    // Navega hasta el nodo en la posición `index`
-    while (p < index && current != NULL)
-    {
-        current = current->next;
-        p++;
-    }
-
-    // Si no existe un nodo en `index`
-    if (current == NULL)
-        return (-1);
-
-    // Si estamos eliminando la cabeza de la lista
-    if (index == 0)
-    {
-        *head = current->next;
-        if (*head != NULL) // Si hay un nodo después de la cabeza
-            (*head)->prev = NULL;
-    }
-    else
-    {
-        // Conectar el nodo previo al siguiente
-        if (current->prev != NULL)
-            current->prev->next = current->next;
-        if (current->next != NULL)
-            current->next->prev = current->prev;
-    }
-
-    free(current);
-    return (1);
+	if (*head == NULL)
+	{
+		return (-1);
+	}
+	saved_head = *head;
+	p = 0;
+	while (p < index && *head != NULL)
+	{
+		*head = (*head)->next;
+		p++;
+	}
+	if (p != index)
+	{
+		*head = saved_head;
+		return (-1);
+	}
+	if (0 == index)
+	{
+		tmp = (*head)->next;
+		free(*head);
+		*head = tmp;
+		if (tmp != NULL)
+		{
+			tmp->prev = NULL;
+		}
+	}
+	else
+	{
+		(*head)->prev->next = (*head)->next;
+		free(*head);
+		if ((*head)->next)
+			(*head)->next->prev = (*head)->prev;
+		*head = saved_head;
+	}
+	return (1);
 }
 
